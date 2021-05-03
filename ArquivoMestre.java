@@ -59,14 +59,14 @@ public class ArquivoMestre {
         anotacoes = dis.readUTF();
   }
 
-    public boolean escreverArqMestre(ArquivoMestre obj){
+    public static void escreverArqMestre(ArquivoMestre obj){
         FileOutputStream arq;
         DataOutputStream dos;
         byte ba[];
 
 
         try {
-            arq = new FileOutputStream("prontuarios.db");
+            arq = new FileOutputStream("prontuarios.db", true);
             dos = new DataOutputStream(arq);
 
             ba = obj.toByteArray();
@@ -78,12 +78,11 @@ public class ArquivoMestre {
             e.printStackTrace();
         }
     
-        return true;
-    
     }
 
-    public ArquivoMestre lerArqMestre(){
+    public static ArquivoMestre lerArqMestre(){
         ArquivoMestre temp  = new ArquivoMestre();
+        ArquivoMestre temp2  = new ArquivoMestre();
         FileInputStream arq;
         DataInputStream dis;
         byte ba[];
@@ -97,17 +96,31 @@ public class ArquivoMestre {
             ba = new byte[100];
             dis.read(ba);
             temp.fromByteArray(ba);
+            System.out.print("Primeira leitura \n"+temp);
+             dis.read(ba);
+            temp2.fromByteArray(ba);
+            /*System.out.print("Segunda leitura \n"+temp2); */
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+        System.out.print("Terceira leitura \n"+temp);
 
         return temp;
     }
 
 
     public static void main(String[] args){
-      
+
+
+      ArquivoMestre anotacao1 = new ArquivoMestre(1, "Maurício", "24/05/1988", 'M',"dsjdhsahkdjsad");
+      ArquivoMestre anotacao2 = new ArquivoMestre(2, "Luana", "24/05/1994", 'F',"jskkjaksajsakansa");
+      ArquivoMestre anotacao3 = new ArquivoMestre();
+
+      escreverArqMestre(anotacao1);
+      escreverArqMestre(anotacao2);
+      anotacao3 = lerArqMestre();
+      /*anotacao3 = lerArqMestre();
+      System.out.print(anotacao3); */
 
     }
 
