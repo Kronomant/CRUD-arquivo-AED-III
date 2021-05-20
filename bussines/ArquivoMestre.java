@@ -22,7 +22,7 @@ public class ArquivoMestre {
             Scanner sc = new Scanner(System.in);
             System.out.println("Não existe nenhum arquivo criado, para criar um novo:");
             System.out.println("Digite o tamanho do campo de anotações: ");
-            this.tamRegistro =  80 + sc.nextInt();
+            this.tamRegistro =  82 + sc.nextInt();
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "rw");
             arq.seek(0);
             arq.writeInt(0); // Quantidade de registros

@@ -1,7 +1,5 @@
 package bussines;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 
 public class Registro {
@@ -24,7 +22,7 @@ public class Registro {
         this.lapide = l;
     }
 
-    public Registro(@NotNull String nome, int i, String nas, char s) {
+    public Registro(String nome, int i, String nas, char s) {
         this.cpf = 0;
 
         if(nome.length() > 60)
