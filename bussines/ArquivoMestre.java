@@ -8,6 +8,7 @@ public class ArquivoMestre {
     private int ultimoCPF = 0;
     private int tamRegistro;
     private static final String FILEPATH = "prontuario.db";
+    private final Diretorio dir = new Diretorio();
 
     public ArquivoMestre() throws Exception {
         try {
@@ -20,7 +21,6 @@ public class ArquivoMestre {
 
         }catch(FileNotFoundException ffe){
             Scanner sc = new Scanner(System.in);
-            System.out.println("Não existe nenhum arquivo criado, para criar um novo:");
             System.out.println("Digite o tamanho do campo de anotações: ");
             this.tamRegistro =  82 + sc.nextInt();
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "rw");
@@ -31,11 +31,9 @@ public class ArquivoMestre {
             arq.writeInt(tamRegistro); // tamanho do registro (atributos + M)
             System.out.println("Um novo arquivo foi criado, agora você pode realizar a seguintes operações\n");
         }
-        System.out.println(this.ultimaPos);
-
     }
 
-    public int getUltimoCPF(){
+    private int getUltimoCPF(){
         return this.ultimoCPF;
     }
 
@@ -43,6 +41,7 @@ public class ArquivoMestre {
         obj.setCpf(++ultimoCPF);
         try {
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "rw");
+            dir.inserirIndice(ultimoCPF, ultimaPos);
             arq.seek(ultimaPos); //337 -> indice com cpf
 
             arq.write(obj.toByteArray());
@@ -78,7 +77,7 @@ public class ArquivoMestre {
         }
     }
 
-    public Registro read(RandomAccessFile file, int position){
+    private Registro read(RandomAccessFile file, int position){
         Registro obj = new Registro();
         byte[] buffer = new byte[this.tamRegistro]; // criar vetor do tamanho dos registros
         try{
@@ -89,6 +88,21 @@ public class ArquivoMestre {
             e.printStackTrace();
         }
         return  obj;
+    }
+
+
+    public void buscarRegistroUnico (int cpf){
+        try{
+            RandomAccessFile arq = new RandomAccessFile(FILEPATH, "r");
+            int endereco = dir.lerIndice(cpf); // busca endereço no indice
+            new Registro();
+            Registro obj;
+            obj = read(arq, endereco);
+            System.out.println(obj);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     /*
@@ -102,7 +116,7 @@ public class ArquivoMestre {
         int opcao = 0;
         try {
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "rw");
-            int endereco = 177; //retornaEndereço(cpf) // função do indice que ao passar cpf por parametro retorna endereço
+            int endereco = dir.lerIndice(cpf); //retornaEndereço(cpf) // função do indice que ao passar cpf por parametro retorna endereço
             obj = read(arq, endereco);
             do {
                 System.out.println("Qual atributo deseja alterar \n [1] cpf \n[2] idade \n[3] nome \n[4] Data de nascimento \n[5] sexo \n[6] Anotações: \n[7]sair");
@@ -139,7 +153,7 @@ public class ArquivoMestre {
             arq.write(obj.toByteArray());   // reescreve registro com as alterações
             arq.close();
         }catch(Exception e){
-            e.printStackTrace();
+            e.printStackTrace(); // tratar quando endereço não existir
         }
     }
 
