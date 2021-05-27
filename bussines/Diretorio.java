@@ -1,6 +1,7 @@
 package bussines;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.*;
 import java.util.Scanner;
@@ -63,6 +64,9 @@ public class Diretorio {
 
     public void inserirIndice (int cpf, int endereco) throws Exception {
         RandomAccessFile arq = new RandomAccessFile("indice.db", "rw");
+        int posBucketCarregado = hashFunction(cpf);
+        int novoBucket = hashFunction(cpf) + (int)Math.pow(2,this.profundidadeGlobal);// pos novo bucket
+                    //indice
         arq.seek(this.vetor[hashFunction(cpf)]);//
         arq.read(buffer);
         indice.fromByteArray(buffer);
@@ -75,18 +79,61 @@ public class Diretorio {
             arq.seek(this.vetor[hashFunction(cpf)]);//
             arq.write(indice.toByteArray());
             arq.close();
+        }else if(indice.getProfundidadeLocal() < profundidadeGlobal){
+            // split apenas de indice
         }else{
-            // trata colisão
+            // split de diretorio e indice
+
         }
         arq.close();
     }
 
+    public void atualizarDiretorioEmDisco(){
+        try{
+            int posDiretorio = (int) Math.pow(2, profundidadeGlobal);
+            RandomAccessFile arq = new RandomAccessFile(FILEPATHDIR, "rw");
+            arq.seek(0);
+            arq.writeInt(profundidadeGlobal);
+            arq.writeInt(Nentradas);
+            arq.writeLong(tamanho_total_bucket);
+            for (int i = 0; i < posDiretorio; i++) { // for com a posição de cada bucket
+                vetor[i] = i * tamanho_total_bucket;
+                arq.writeLong(vetor[i]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void splitDiretorio(int cpf) throws Exception{
+
+        long ultimoEndereco = vetor[(int)Math.pow(2,this.profundidadeGlobal)];// não pode ser
+
+        ultimoEndereco += tamanho_total_bucket;
+        int aux = hashFunction(cpf) + (int)Math.pow(2,this.profundidadeGlobal);
+
+        int profAntiga = this.profundidadeGlobal++; // profundidade global atualizada
+        int j=0;
+        long[] novoDiretorio = new long[(int)Math.pow(2,this.profundidadeGlobal)]; // criação do novo diretorio
+
+        for(int i =0; i < profundidadeGlobal; i++){  // preencher novo diretorio
+            novoDiretorio[i] = vetor[j];
+            j++;
+            if(j == profAntiga)
+                j=0;
+        }
+        novoDiretorio[aux] = ultimoEndereco; // posição do novo bucket
+        vetor = novoDiretorio;
+        atualizarDiretorioEmDisco();
+
+    }
 
     public int lerIndice (int cpf) throws Exception{
         RandomAccessFile arq = new RandomAccessFile("indice.db", "r");
         int endereco = -1;
 
-            arq.seek(this.vetor[hashFunction(cpf)]);
+        arq.seek(this.vetor[hashFunction(cpf)]);
         arq.read(buffer);
         indice.fromByteArray(buffer); // Carregar bucket em memoria
 
