@@ -10,7 +10,7 @@ public class Prontuario{
         String nome ="";
         String nascimento ="";
         char sexo = ' ';
-        int idade = 0, opcao = 0;
+        int idade = 0, opcao = 0, cpf=0;
 
         do {
             System.out.println("Menu" + "\n [1] - Adicionar Prontuário" + "\n [2] - Mostrar todos Prontuários " +
@@ -25,9 +25,12 @@ public class Prontuario{
                     nascimento = sc.nextLine();
                     System.out.println("Insira a idade do paciente: ");
                     idade = sc.nextInt();
+                    System.out.println("Insira o cpf do paciente: ");
+                    cpf = sc.nextInt();
                     System.out.println("Insira o sexo do paciente: ");
                     sexo = sc.next().charAt(0);
-                    Registro dados = new Registro(nome,idade, nascimento, sexo);
+                    //Registro dados = new Registro(nome,idade, nascimento, sexo);
+                    Registro dados = new Registro(cpf,nome,idade, nascimento, sexo);
                     ArqM.escreverArqMestre(dados);
 
                     break;
@@ -40,7 +43,7 @@ public class Prontuario{
                     break;
                 case 4:
                     System.out.println("Digite o cpf do paciente: ");
-                    ArqM.excluirUsuario(0);
+                    ArqM.excluirUsuario(sc.nextInt());
                     break;
                 case 5:
                     System.out.println("Digite o cpf do paciente: ");

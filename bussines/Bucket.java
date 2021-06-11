@@ -1,6 +1,7 @@
 package bussines;
 
 import java.io.*;
+import java.util.Arrays;
 
 public class Bucket {
     private int profundidadeLocal;
@@ -95,5 +96,17 @@ public class Bucket {
             cpf[i] = dis.readInt();
             endereco[i] = dis.readInt();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Bucket{" +
+                "profundidadeLocal=" + profundidadeLocal +
+                ", registros_Ativos=" + registros_Ativos +
+                ", lapide=" + Arrays.toString(lapide) +
+                ", cpf=" + Arrays.toString(cpf) +
+                ", endereco=" + Arrays.toString(endereco) +
+                ", Nentradas=" + Nentradas +
+                '}';
     }
 }

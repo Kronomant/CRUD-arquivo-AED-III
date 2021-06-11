@@ -12,14 +12,14 @@ public class Registro {
     private char lapide;
 
 
-    public Registro(int cpf, String n, int i, String nas, char s, String a, char l) {
+    public Registro(int cpf, String n, int i, String nas, char s) {
         this.cpf = cpf;
         this.nome = n;
         this.nascimento = nas;
         this.idade = i;
         this.sexo = s;
-        this.anotacoes = a;
-        this.lapide = l;
+        this.anotacoes = " ";
+        this.lapide = ' ';
     }
 
     public Registro(String nome, int i, String nas, char s) {
@@ -54,6 +54,8 @@ public class Registro {
     public char getLapide() {
         return lapide;
     }
+
+    public int getCpf() { return cpf; }
 
     public void setCpf(int cpf){
         this.cpf = cpf;

@@ -37,11 +37,15 @@ public class ArquivoMestre {
         return this.ultimoCPF;
     }
 
-    public void escreverArqMestre(Registro obj){
-        obj.setCpf(++ultimoCPF);
+    public void escreverArqMestre(Registro obj ){
+        //obj.setCpf(++ultimoCPF);
         try {
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "rw");
-            dir.inserirIndice(ultimoCPF, ultimaPos);
+            //dir.inserirIndice(ultimoCPF, ultimaPos); //insere no indice
+            dir.inserirIndice(obj.getCpf(), ultimaPos); // transformar inserirIndice em boolean pra impedir inserção
+            // imprimir diretorio
+            System.out.println(dir.toString());
+
             arq.seek(ultimaPos); //337 -> indice com cpf
 
             arq.write(obj.toByteArray());
@@ -121,7 +125,7 @@ public class ArquivoMestre {
             do {
                 System.out.println("Qual atributo deseja alterar \n [1] cpf \n[2] idade \n[3] nome \n[4] Data de nascimento \n[5] sexo \n[6] Anotações: \n[7]sair");
                 opcao = sc.nextInt();
-                sc.nextLine(); // limpar a caralha do scanner
+                sc.nextLine(); // limpar Scanner
                 switch (opcao) {
                     case 1:
                         System.out.println("Novo CPF: ");
@@ -161,7 +165,7 @@ public class ArquivoMestre {
         Registro obj = new Registro();
         try{
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "rw");
-            int endereco = 177; //retornaEndereço(cpf)
+            int endereco = dir.lerIndice(cpf);
             arq.seek(endereco);
             arq.writeChar('*');
             arq.close();
