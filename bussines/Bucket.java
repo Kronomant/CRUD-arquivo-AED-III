@@ -3,7 +3,7 @@ package bussines;
 import java.io.*;
 import java.util.Arrays;
 
-public class Bucket {
+public class Bucket implements Cloneable {
     private int profundidadeLocal;
     private int registros_Ativos;
     private char[] lapide;
@@ -15,12 +15,24 @@ public class Bucket {
         return lapide[pos];
     }
 
+    public char[] getVetLapide() {
+        return lapide;
+    }
+
     public int getCpf(int pos) {
         return cpf[pos];
     }
 
+    public int[] getVetCpf() {
+        return cpf;
+    }
+
     public int getEndereco(int pos) {
         return endereco[pos];
+    }
+
+    public int[] getVetEndereco() {
+        return endereco;
     }
 
     public int getProfundidadeLocal() {
@@ -52,9 +64,13 @@ public class Bucket {
     }
 
 
-    public Bucket(){
+    public Bucket(int Nentradas){
         this.profundidadeLocal = 0;
         this.registros_Ativos = 0;
+        this.lapide = new char[Nentradas];
+        this.cpf = new int[Nentradas];
+        this.endereco = new int[Nentradas];
+        this.Nentradas = Nentradas;
     }
 
     protected Bucket(int profundidade, int Nregistros, int Nentradas){
@@ -64,6 +80,15 @@ public class Bucket {
         this.cpf = new int[Nentradas];
         this.endereco = new int[Nentradas];
         this.Nentradas = Nentradas;
+    }
+
+    public Bucket(Bucket bucket){
+        this.profundidadeLocal = bucket.getProfundidadeLocal();
+        this.registros_Ativos = bucket.getRegistros_Ativos();
+        this.lapide = bucket.getVetLapide();
+        this.cpf = bucket.getVetCpf();
+        this.endereco = bucket.getVetEndereco();
+        
     }
 
     /*
@@ -101,12 +126,19 @@ public class Bucket {
     @Override
     public String toString() {
         return "Bucket{" +
-                "profundidadeLocal=" + profundidadeLocal +
-                ", registros_Ativos=" + registros_Ativos +
-                ", lapide=" + Arrays.toString(lapide) +
-                ", cpf=" + Arrays.toString(cpf) +
-                ", endereco=" + Arrays.toString(endereco) +
-                ", Nentradas=" + Nentradas +
+                "profundidadeLocal: " + profundidadeLocal +
+                ", registros_Ativos: " + registros_Ativos +
+                ", lapide: " + Arrays.toString(lapide) +
+                ", cpf: " + Arrays.toString(cpf) +
+                ", endereco: " + Arrays.toString(endereco) +
+                ", Nentradas:" + Nentradas +
                 '}';
     }
+
+    @Override
+    protected Bucket clone() throws CloneNotSupportedException {
+        // TODO Auto-generated method stub
+        return (Bucket)super.clone();
+    }
+
 }

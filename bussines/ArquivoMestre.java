@@ -42,7 +42,7 @@ public class ArquivoMestre {
         try {
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "rw");
             //dir.inserirIndice(ultimoCPF, ultimaPos); //insere no indice
-            dir.inserirIndice(obj.getCpf(), ultimaPos); // transformar inserirIndice em boolean pra impedir inserção
+            dir.inserirIndice(obj.getCpf(), ultimaPos, dir.getProfundidadeGlobal());// transformar inserirIndice em boolean pra impedir inserção
             // imprimir diretorio
             System.out.println(dir.toString());
 
@@ -79,6 +79,13 @@ public class ArquivoMestre {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void imprimeDiretorioIndice(){
+        System.out.println("Diretorio: \n");
+        System.out.println(dir.toString());
+        System.out.println("\nIndice: \n");
+        dir.imprimeIndice();
     }
 
     private Registro read(RandomAccessFile file, int position){
