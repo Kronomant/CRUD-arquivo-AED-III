@@ -1,6 +1,7 @@
 package bussines;
 import java.io.*;
 import java.util.Scanner;
+import java.util.Random;
 
 public class ArquivoMestre {
     private int quantidadeRegistros = 0;
@@ -44,9 +45,12 @@ public class ArquivoMestre {
             //dir.inserirIndice(ultimoCPF, ultimaPos); //insere no indice
             dir.inserirIndice(obj.getCpf(), ultimaPos, dir.getProfundidadeGlobal());// transformar inserirIndice em boolean pra impedir inserção
             // imprimir diretorio
-            System.out.println(dir.toString());
+            //System.out.println(dir.toString());
+            if(this.ultimaPos < 0){
+                System.out.println("DEU MUITO RUIM");
+            }
 
-            arq.seek(ultimaPos); //337 -> indice com cpf
+            arq.seek(this.ultimaPos); //337 -> indice com cpf
 
             arq.write(obj.toByteArray());
             this.ultimaPos = ultimaPos + tamRegistro;
@@ -59,6 +63,31 @@ public class ArquivoMestre {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void simulacao( int numeroInsercoes){
+        Random gerador = new Random();
+        int[] vetorCPFs = new int[numeroInsercoes];
+        Registro dados = new Registro(0,"teste",200, "23/04/1800", 'M');
+        long tempoInicio =  System.nanoTime();
+        for (int i = 0; i < numeroInsercoes; i++) {
+            vetorCPFs[i] = gerador.nextInt(10000000);
+            dados.setCpf(vetorCPFs[i]);
+            
+            //dir.inserirIndice(vetorCPFs[i], ultimaPos, dir.getProfundidadeGlobal());
+            escreverArqMestre(dados);
+         }
+         //System.out.println(i+"°Inserção "+" Inserindo CPf: "+vetorCPFs[i]+ " Profundidade Global: "+dir.getProfundidadeGlobal()+" Tempo inserção: "+(System.currentTimeMillis()-tempoInicio));
+         System.out.println("Profundidade Global Final: "+dir.getProfundidadeGlobal()+" Tempo inserção de "+numeroInsercoes+" registros: "+(System.nanoTime()-tempoInicio));
+         
+         tempoInicio = System.nanoTime();
+         for (int i = 0; i < numeroInsercoes; i++) {
+            
+            simulacaoBusca(vetorCPFs[i]);
+            //System.out.println("Buscando: " + vetorCPFs[i] + " Tempo Busca: "+((System.currentTimeMillis()-tempoInicio))/1000);
+         }
+         System.out.println("Tempo busca de "+numeroInsercoes+" registros: "+(System.nanoTime()-tempoInicio));
+
     }
 
     public void lerArqMestre(){
@@ -81,11 +110,21 @@ public class ArquivoMestre {
         }
     }
 
-    public void imprimeDiretorioIndice(){
+    public void imprimeTodosArquivos(){
         System.out.println("Diretorio: \n");
         System.out.println(dir.toString());
         System.out.println("\nIndice: \n");
         dir.imprimeIndice();
+        lerArqMestre();
+
+    }
+
+    public void imprimirIndice(){
+        dir.imprimeIndice();
+    }
+
+    public void imprimirDiretório(){
+        System.out.println(dir.toString()); 
     }
 
     private Registro read(RandomAccessFile file, int position){
@@ -101,7 +140,6 @@ public class ArquivoMestre {
         return  obj;
     }
 
-
     public void buscarRegistroUnico (int cpf){
         try{
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "r");
@@ -113,7 +151,18 @@ public class ArquivoMestre {
         }catch (Exception e){
             e.printStackTrace();
         }
-
+    }
+    
+    public void simulacaoBusca (int cpf){
+        try{
+            RandomAccessFile arq = new RandomAccessFile(FILEPATH, "r");
+            int endereco = dir.lerIndice(cpf); // busca endereço no indice
+            new Registro();
+            Registro obj;
+            obj = read(arq, endereco);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -182,7 +231,5 @@ public class ArquivoMestre {
 
     }
 
-    public static void main(String[] args){
-    }
 }
 
