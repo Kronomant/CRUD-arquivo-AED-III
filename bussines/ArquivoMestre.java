@@ -3,6 +3,12 @@ import java.io.*;
 import java.util.Scanner;
 import java.util.Random;
 
+
+    /**
+     * Classe Bucket: Responsável por armazenar em seu cabecalho a quantidade de registros,
+     * a ultima posicao que foi inserido o registro, o ultimo cpf inserido e o tamanho do registro 
+     */
+
 public class ArquivoMestre {
     private int quantidadeRegistros = 0;
     private int ultimaPos = 17;
@@ -11,6 +17,13 @@ public class ArquivoMestre {
     private static final String FILEPATH = "prontuario.db";
     private final Diretorio dir = new Diretorio();
 
+
+    /**
+     * Nesse construtor a primeira tentativa feita é a de recuperar o arquivo prontuario, caso ele exista.
+     * Do contrário é solicitado que o usuário informe o tamanho para o campo de anotações que ele deseja 
+     * para que seja feita a criação do arquivo. 
+     * @throws Exception
+     */
     public ArquivoMestre() throws Exception {
         try {
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "r");
@@ -33,21 +46,25 @@ public class ArquivoMestre {
             System.out.println("Um novo arquivo foi criado, agora você pode realizar a seguintes operações\n");
         }
     }
-
+    
     private int getUltimoCPF(){
         return this.ultimoCPF;
     }
 
+    /**
+     * Método responsável pela escrita do registro realizada no arquivo mestre
+     * na posição do último registro inserido. A quantidade de registros ativos é 
+     * atualizada e tanto a última posição preenchida quanto o último cpf
+     * que contém nela são escritos no arquivo
+     * @param obj
+     */
     public void escreverArqMestre(Registro obj ){
-        //obj.setCpf(++ultimoCPF);
         try {
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "rw");
-            //dir.inserirIndice(ultimoCPF, ultimaPos); //insere no indice
             dir.inserirIndice(obj.getCpf(), ultimaPos, dir.getProfundidadeGlobal());// transformar inserirIndice em boolean pra impedir inserção
-            // imprimir diretorio
-            //System.out.println(dir.toString());
+
             if(this.ultimaPos < 0){
-                System.out.println("DEU MUITO RUIM");
+                System.out.println("ERRO");
             }
 
             arq.seek(this.ultimaPos); //337 -> indice com cpf
@@ -65,6 +82,14 @@ public class ArquivoMestre {
         }
     }
 
+    /**
+     * Método responsável por realizar a opção 8 (Simulação)
+     * Recebe como parâmetro o número de inserções que serão relizadas e possui um registro
+     * fictício que será escrito no arquivo durante a simulação.
+     * Nesse método também é calculado o tempo gasto para realizar todas as inserções e 
+     * para realizar a busca de todos os cpf's
+     * @param numeroInsercoes
+     */
     public void simulacao( int numeroInsercoes){
         Random gerador = new Random();
         int[] vetorCPFs = new int[numeroInsercoes];
@@ -73,25 +98,25 @@ public class ArquivoMestre {
         for (int i = 0; i < numeroInsercoes; i++) {
             vetorCPFs[i] = gerador.nextInt(10000000);
             dados.setCpf(vetorCPFs[i]);
-            
-            //dir.inserirIndice(vetorCPFs[i], ultimaPos, dir.getProfundidadeGlobal());
             escreverArqMestre(dados);
          }
-         //System.out.println(i+"°Inserção "+" Inserindo CPf: "+vetorCPFs[i]+ " Profundidade Global: "+dir.getProfundidadeGlobal()+" Tempo inserção: "+(System.currentTimeMillis()-tempoInicio));
          System.out.println("Profundidade Global Final: "+dir.getProfundidadeGlobal()+" Tempo inserção de "+numeroInsercoes+" registros: "+(System.nanoTime()-tempoInicio));
          
          tempoInicio = System.nanoTime();
-         for (int i = 0; i < numeroInsercoes; i++) {
-            
+         for (int i = 0; i < numeroInsercoes; i++) {       
             simulacaoBusca(vetorCPFs[i]);
-            //System.out.println("Buscando: " + vetorCPFs[i] + " Tempo Busca: "+((System.currentTimeMillis()-tempoInicio))/1000);
          }
          System.out.println("Tempo busca de "+numeroInsercoes+" registros: "+(System.nanoTime()-tempoInicio));
 
     }
 
+    /**
+     * Nessa função todos os registros que são inseridos no arquivo mestre 
+     * são lidos. Para isso é necessário saltar as informações contidas no cabeçalho 
+     * e iniciar a leitura. Além disso, registros marcados como excluídos não podem
+     * estar inclusos nessa leitura.
+     */
     public void lerArqMestre(){
-        int nbytes = 0;
         Registro obj = new Registro();
         byte[] buffer = new byte[this.tamRegistro]; // criar vetor do tamanho dos registros
         try {
@@ -110,6 +135,10 @@ public class ArquivoMestre {
         }
     }
 
+    /**
+     * Esse método é responsável pela leitura dos 3 arquivos 
+     * (Diretorio, Indice e Arquivo Mestre)
+     */
     public void imprimeTodosArquivos(){
         System.out.println("Diretorio: \n");
         System.out.println(dir.toString());
@@ -119,14 +148,27 @@ public class ArquivoMestre {
 
     }
 
+    /**
+     * Método responsável por imprimir o arquivo Indice
+     */
     public void imprimirIndice(){
         dir.imprimeIndice();
     }
 
-    public void imprimirDiretório(){
+    /**
+     * Método responsável por imprimir o arquivo Diretorio
+     */
+    public void imprimirDiretorio(){
         System.out.println(dir.toString()); 
     }
 
+    /**
+     * Método responsável pela leitura do registro inserido no Bucket 
+     * na posção passada por parâmetro
+     * @param file
+     * @param position
+     * @return
+     */
     private Registro read(RandomAccessFile file, int position){
         Registro obj = new Registro();
         byte[] buffer = new byte[this.tamRegistro]; // criar vetor do tamanho dos registros
@@ -140,6 +182,12 @@ public class ArquivoMestre {
         return  obj;
     }
 
+    /**
+     * Esse método recebe um cpf por parâmetro para realizar a sua busca.
+     * Primeiro é encontrado o seu endereco no arquivo indice e após isso 
+     * suas informações são recuperadas e impressas na tela
+     * @param cpf
+     */
     public void buscarRegistroUnico (int cpf){
         try{
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "r");
@@ -152,7 +200,12 @@ public class ArquivoMestre {
             e.printStackTrace();
         }
     }
-    
+    /**
+     * Esse método é semelhante ao anterior e sua única distinção é o fato
+     * de que ele não imprime o registro na tela. É utilizado durante a 
+     * opção 8 de Simulação
+     * @param cpf
+     */
     public void simulacaoBusca (int cpf){
         try{
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "r");
@@ -165,13 +218,17 @@ public class ArquivoMestre {
         }
     }
 
-    /*
-    * receber cpf como parametro, esse cpf vai ir para a função do indice que retorna o endereço,
-    * se esse cpf não estiver cadastrado tratar.
-    * */
+    /**
+     * Esse método é utilizado para atualizar um registro específico recebido por
+     * parâmetro. Seu endereco no arquivo indece é encontrado. É perguntado ao 
+     * usuário qual informação deseja alterar no prontuário. A informação escolhida é alterada
+     * e enquanto o usuário não sinalizar que deseja sair da repetição, lhe é disponibilizado
+     * um menu para escolher se deseja realizar mais alguma alteração. Ao final o registro é 
+     * reeescrito com as modificações
+     * @param cpf
+     */
     public void atualizarProntuario(int cpf) {
         Scanner sc = new Scanner(System.in);
-        String entrada = "";
         Registro obj = new Registro();
         int opcao = 0;
         try {
@@ -215,10 +272,17 @@ public class ArquivoMestre {
         }catch(Exception e){
             e.printStackTrace(); // tratar quando endereço não existir
         }
+        sc.close();
     }
 
+    /**
+     * Método utilizado para excluir um cpf específico.
+     * Seu endereco é pesquisado no índice e sua lápide é 
+     * marcada para simbolizar a sua exclusão
+     * @param cpf
+     * @throws Exception
+     */
     public void excluirUsuario(int cpf)throws Exception{
-        Registro obj = new Registro();
         try{
             RandomAccessFile arq = new RandomAccessFile(FILEPATH, "rw");
             int endereco = dir.lerIndice(cpf);

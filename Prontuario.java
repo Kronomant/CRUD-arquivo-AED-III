@@ -47,7 +47,7 @@ public class Prontuario{
                     ArqM.lerArqMestre();
                     break;
                 case 6:
-                    ArqM.imprimirDiretório();
+                    ArqM.imprimirDiretorio();
                     break;
                 case 7:
                     ArqM.imprimirIndice();
